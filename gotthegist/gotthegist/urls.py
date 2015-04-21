@@ -6,5 +6,8 @@ urlpatterns = patterns('',
     # url(r'^$', 'gotthegist.views.home', name='home'),
     # url(r'^blog/', include('blog.urls')),
 
+    #polls
+    url(r'^polls/', include('polls.urls')),
     url(r'^admin/', include(admin.site.urls)),
 )
+
