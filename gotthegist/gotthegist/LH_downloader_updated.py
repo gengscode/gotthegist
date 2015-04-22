@@ -50,16 +50,21 @@ br.form['password'] = password
 # Login
 response = br.submit()
 
-
-
 courses_urls = []
 courses_texts = []
 
-# find the section of the page that has the links to the course pages
-my_courses = BeautifulSoup(response).find('ul', id='z_gm')
+# find the links to the course pages
+for link in BeautifulSoup(response).find_all('a', href= re.compile('^/d2l/lp/ouHome/home')):
+	try:
+		if link.contents not in courses_texts:
+			courses_urls.append(('https://lh.hbs.edu'+link['href']))
+			courses_texts.append((link.contents))
+	# if there is an error, just pass...sometimes there are errors
+	except:
+		pass
 
-#confirm that were were able to find that section (e.g. that we logged in successfully)
-if my_courses == None:
+#confirm that were were able to find the course links (i.e. that the list is not empty)
+if not courses_urls:
 	print "---------------"
 	print "     "
 	print "Sorry, we were unable to login with that username and password"
@@ -80,13 +85,10 @@ else:
 	print "     "
 	print "     "	
 
-# find all the links within the appropriate section of the page (where the classes are listed)
-for link in my_courses.select('a[href]'):
-	courses_urls.append(('https://lh.hbs.edu'+link['href']))
-	courses_texts.append((link.contents))
-
 
 syllabus_urls = []
+
+
 
 # create a list of the syllabus pages for each course (based on each course's 5 digit code taken from the course's homepage URL)
 for i in courses_urls:
@@ -101,6 +103,8 @@ for course in courses_texts:
 
 
 course_number = 0
+
+
 
 # scrape all the files on each syllabus page!
 for syllabus in syllabus_urls:
